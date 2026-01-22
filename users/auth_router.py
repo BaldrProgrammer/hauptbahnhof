@@ -9,5 +9,5 @@ router = APIRouter(prefix='/auth')
 
 @router.post('/register')
 async def register(user: SUserReg):
-    new_user = User(**user.model_dump(), tickets='ARRAY{1, 2, 3}')
+    new_user = User(**user.model_dump(), tickets='{1, 2, 3}')
     insert(new_user)
