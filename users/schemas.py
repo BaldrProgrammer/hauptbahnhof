@@ -18,4 +18,4 @@ class SUserGet(BaseModel):
     password: str
     role: str
     ulga: int
-    tickets: List[int]
+    tickets: str
