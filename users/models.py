@@ -13,4 +13,4 @@ class User(Base):
     password: str = Column()
     role: str = Column()
     ulga: int = Column()
-    tickets: Set[int] = Column()
+    tickets: str = Column()
