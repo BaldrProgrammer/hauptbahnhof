@@ -10,6 +10,10 @@ async def get_hash_password(password: str):
     return pwd_context.hash(password)
 
 
+async def verify_password(password: str, hashed_password: str):
+    return pwd_context.verify(password, hashed_password)
+
+
 async def jwt_encode(data: dict):
     expire_date = datetime.now(timezone.utc) + timedelta(days=1)
     data.update({'exp': expire_date})
