@@ -29,7 +29,7 @@ async def login(auth_data: SUserLog, response: Response):
         if await verify_password(auth_data.password, user[0].password):
             token = await jwt_encode({'uid': user[0].id})
             response.set_cookie('access_token', token)
-            return {'ok': True}
+            return {'ok': True, 'token': token}
 
         return HTTPException(
             status.HTTP_403_FORBIDDEN,

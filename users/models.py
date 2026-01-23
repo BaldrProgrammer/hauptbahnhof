@@ -1,5 +1,4 @@
 import dataclasses
-from typing import Set
 from bezdarsql.base import Base, Column
 
 

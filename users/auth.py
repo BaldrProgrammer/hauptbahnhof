@@ -1,5 +1,9 @@
-import asyncio
 from datetime import timedelta, timezone, datetime
+from fastapi import Request
+from bezdarsql import select
+
+from users.models import User
+
 from passlib.context import CryptContext
 from jose import jwt
 
@@ -23,3 +27,9 @@ async def jwt_encode(data: dict):
 async def jwt_decode(token: str):
     data = jwt.decode(token, key='hauptbahnhof', algorithms='HS256')
     return data
+
+
+async def get_current_user(request: Request):
+    token = request.cookies.get('access_token')
+    data = await jwt_decode(token)
+    return select(User, filter_by={'id': data['uid']})
