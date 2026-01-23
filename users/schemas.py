@@ -9,6 +9,11 @@ class SUserReg(BaseModel):
     ulga: int
 
 
+class SUserLog(BaseModel):
+    username: str
+    password: str
+
+
 class SUserGet(BaseModel):
     id: int
     name: str
