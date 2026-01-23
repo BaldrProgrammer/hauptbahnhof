@@ -41,3 +41,8 @@ async def login(auth_data: SUserLog, response: Response):
         'пользователя не существует'
     )
 
+
+@router.post('/logout')
+async def logout(response: Response):
+    response.delete_cookie('access_token')
+    return {'ok': True}
