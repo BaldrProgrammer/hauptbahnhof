@@ -21,3 +21,23 @@ async def register(user: SUserReg):
         status.HTTP_409_CONFLICT,
         'пользователь уже существует'
     )
+
+
+@router.post('/login')
+async def login(auth_data: SUserLog, response: Response):
+    if user := select(User, filter_by={'username': auth_data.username}):
+        if await verify_password(auth_data.password, user[0].password):
+            token = await jwt_encode({'uid': user[0].id})
+            response.set_cookie('access_token', token)
+            return {'ok': True}
+
+        return HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            'неправильный логин или пароль'
+        )
+
+    return HTTPException(
+        status.HTTP_404_NOT_FOUND,
+        'пользователя не существует'
+    )
+
