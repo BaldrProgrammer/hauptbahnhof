@@ -6,7 +6,7 @@ from users.schemas import SUserReg, SUserLog
 
 from bezdarsql import select, insert
 
-router = APIRouter(prefix='/auth')
+router = APIRouter(prefix='/auth', tags=['/auth'])
 
 
 @router.post('/register')
