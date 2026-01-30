@@ -18,6 +18,14 @@ async def current_relief(user: SUserGet = Depends(get_current_user)) -> SReliefG
     return None
 
 
+@router.get('/{relief_id}')
+async def get_relief_by_id(relief_id: int):
+    relief = select(Relief, filter_by={'id': relief_id})
+    if not relief:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='relief not found.')
+    return relief[0]
+
+
 @router.post('/add')
 async def add_relief(new_relief: SReliefAdd, user: SUserGet = Depends(get_current_user)) -> dict:
     if user.role == 'admin':
@@ -35,4 +43,3 @@ async def add_relief(relief_id: int, user: SUserGet = Depends(get_current_user))
             return {'ok': True}
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'relief id={relief_id} doesn\'t exists.')
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to create reliefs.')
-
