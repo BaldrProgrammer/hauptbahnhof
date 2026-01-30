@@ -30,7 +30,9 @@ async def add_relief(new_relief: SReliefAdd, user: SUserGet = Depends(get_curren
 @router.delete('/{relief_id}')
 async def add_relief(relief_id: int, user: SUserGet = Depends(get_current_user)) -> dict:
     if user.role == 'admin':
-        delete(Relief, where={'id': relief_id})
-        return {'ok': True}
+        if select(Relief, filter_by={'id': relief_id}):
+            delete(Relief, where={'id': relief_id})
+            return {'ok': True}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'relief id={relief_id} doesn\'t exists.')
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to create reliefs.')
 
