@@ -5,14 +5,13 @@ from relief.schemas import SReliefGet, SReliefAdd
 from users.schemas import SUserGet
 from users.auth import get_current_user
 
-from bezdarsql import select, insert
+from bezdarsql import select, insert, delete
 
 router = APIRouter(prefix='/relief', tags=['/relief'])
 
 
 @router.get('/current')
 async def current_relief(user: SUserGet = Depends(get_current_user)) -> SReliefGet | None:
-    print(user)
     if user:
         relief = select(Relief, filter_by={'id': user.ulga})[0]
         return relief
@@ -26,3 +25,12 @@ async def add_relief(new_relief: SReliefAdd, user: SUserGet = Depends(get_curren
         insert(relief)
         return {'ok': True, 'new_instance': select(Relief, filter_by={'title': new_relief.title})}
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to create reliefs.')
+
+
+@router.delete('/{relief_id}')
+async def add_relief(relief_id: int, user: SUserGet = Depends(get_current_user)) -> dict:
+    if user.role == 'admin':
+        delete(Relief, where={'id': relief_id})
+        return {'ok': True}
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to create reliefs.')
+
