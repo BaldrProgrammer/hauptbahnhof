@@ -13,14 +13,14 @@ router = APIRouter(prefix='/relief', tags=['/relief'])
 @router.get('/current')
 async def current_relief(user: SUserGet = Depends(get_current_user)) -> SReliefGet | None:
     if user:
-        relief = select(Relief, filter_by={'id': user.ulga})[0]
+        relief = select(Relief, filter_by={Relief.id: user.ulga})[0]
         return relief
     return None
 
 
 @router.get('/{relief_id}')
 async def get_relief_by_id(relief_id: int):
-    relief = select(Relief, filter_by={'id': relief_id})
+    relief = select(Relief, filter_by={Relief.id: relief_id})
     if not relief:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='relief not found.')
     return relief[0]
@@ -31,14 +31,14 @@ async def add_relief(new_relief: SReliefAdd, user: SUserGet = Depends(get_curren
     if user.role == 'admin':
         relief = Relief(**new_relief.model_dump())
         insert(relief)
-        return {'ok': True, 'new_instance': select(Relief, filter_by={'title': new_relief.title})}
+        return {'ok': True, 'new_instance': select(Relief, filter_by={Relief.title: new_relief.title})}
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to create reliefs.')
 
 
 @router.delete('/{relief_id}')
 async def add_relief(relief_id: int, user: SUserGet = Depends(get_current_user)) -> dict:
     if user.role == 'admin':
-        if select(Relief, filter_by={'id': relief_id}):
+        if select(Relief, filter_by={Relief.id: relief_id}):
             delete(Relief, where={'id': relief_id})
             return {'ok': True}
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'relief id={relief_id} doesn\'t exists.')
