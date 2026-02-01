@@ -1,8 +1,9 @@
 from datetime import timedelta, timezone, datetime
 from fastapi import Request
-from bezdarsql import select
+from bezdarsql import select_join
 
 from users.models import User
+from relief.models import Relief
 
 from passlib.context import CryptContext
 from jose import jwt
@@ -33,5 +34,7 @@ async def get_current_user(request: Request):
     token = request.cookies.get('access_token')
     if token:
         data = await jwt_decode(token)
-        return select(User, filter_by={User.id: data['uid']})[0]
+        user, relief = select_join((User, Relief), filter_by={User.id: data['uid']})
+        user.ulga = relief
+        return user
     return None
