@@ -33,5 +33,5 @@ async def get_current_user(request: Request):
     token = request.cookies.get('access_token')
     if token:
         data = await jwt_decode(token)
-        return select(User, filter_by={'id': data['uid']})[0]
+        return select(User, filter_by={User.id: data['uid']})[0]
     return None
