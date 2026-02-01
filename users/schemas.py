@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from relief.schemas import SReliefGet
 
 
 class SUserReg(BaseModel):
@@ -20,5 +21,5 @@ class SUserGet(BaseModel):
     username: str
     password: str
     role: str
-    ulga: int
+    ulga: SReliefGet
     tickets: str
