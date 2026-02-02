@@ -6,7 +6,7 @@ router = APIRouter(prefix='/stations', tags=['/stations'])
 
 
 @router.get('/{station_id}')
-async def get_station_by_id(station_id: int):
+async def get_station_by_id(station_id: str):
     station = select(Station, filter_by={Station.id: station_id})
     if station:
         return select(Station, filter_by={Station.id: station_id})

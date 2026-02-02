@@ -7,7 +7,7 @@ from bezdarsql.base import Base, Column
 class Station(Base):
     __tablename__ = 'stations'
 
-    id: int = Column()
+    id: str = Column()
     title: str = Column()
     city: str = Column()
     region: str = Column()

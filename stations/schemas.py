@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class SStation(BaseModel):
-    id: int
+    id: str
     title: str
     city: str
     region: str
