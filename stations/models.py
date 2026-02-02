@@ -14,3 +14,4 @@ class Station(Base):
     country: str = Column()
     address: str = Column()
     coordinates: str = Column()
+    international_codes: str = Column()
