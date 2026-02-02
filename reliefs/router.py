@@ -7,7 +7,7 @@ from users.auth import get_current_user
 
 from bezdarsql import select, insert, delete
 
-router = APIRouter(prefix='/relief', tags=['/relief'])
+router = APIRouter(prefix='/reliefs', tags=['/reliefs'])
 
 
 @router.get('/current')
