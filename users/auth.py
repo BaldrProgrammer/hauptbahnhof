@@ -3,7 +3,7 @@ from fastapi import Request
 from bezdarsql import select_join
 
 from users.models import User
-from relief.models import Relief
+from reliefs.models import Relief
 
 from passlib.context import CryptContext
 from jose import jwt

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from relief.models import Relief
-from relief.schemas import SReliefGet, SReliefAdd
+from reliefs.models import Relief
+from reliefs.schemas import SReliefGet, SReliefAdd
 from users.schemas import SUserGet
 from users.auth import get_current_user
 
@@ -35,7 +35,7 @@ async def add_relief(new_relief: SReliefAdd, user: SUserGet = Depends(get_curren
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to create reliefs.')
 
 
-@router.delete('/{relief_id}')
+@router.delete('/remove/{relief_id}')
 async def add_relief(relief_id: int, user: SUserGet = Depends(get_current_user)) -> dict:
     if user.role == 'admin':
         if select(Relief, filter_by={Relief.id: relief_id}):

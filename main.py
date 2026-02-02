@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from users.auth_router import router as auth_router
 from users.router import router as users_router
-from relief.router import router as relief_router
+from reliefs.router import router as relief_router
 
 app = FastAPI()
 

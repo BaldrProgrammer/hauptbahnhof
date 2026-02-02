@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from relief.schemas import SReliefGet
+from reliefs.schemas import SReliefGet
 
 
 class SUserReg(BaseModel):
