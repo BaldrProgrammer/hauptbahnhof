@@ -32,14 +32,16 @@ async def add_relief(new_relief: SReliefAdd, user: SUserGet = Depends(get_curren
         relief = Relief(**new_relief.model_dump())
         insert(relief)
         return {'ok': True, 'new_instance': select(Relief, filter_by={Relief.title: new_relief.title})}
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to create reliefs.')
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                        detail='You are not admin and not followed to create reliefs.')
 
 
 @router.delete('/remove/{relief_id}')
 async def remove_relief_by_id(relief_id: int, user: SUserGet = Depends(get_current_user)) -> dict:
     if user.role == 'admin':
         if select(Relief, filter_by={Relief.id: relief_id}):
-            delete(Relief, where={'id': relief_id})
+            delete(Relief, where={Relief.id: relief_id})
             return {'ok': True}
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'relief id={relief_id} doesn\'t exists.')
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to create reliefs.')
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                        detail='You are not admin and not followed to create reliefs.')
