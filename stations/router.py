@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from bezdarsql import select, insert
+from bezdarsql import select, insert, delete
 from users.auth import get_current_user
 from stations.models import Station
 from stations.schemas import SStation
@@ -29,3 +29,13 @@ async def add_station(station: SStation, user = Depends(get_current_user)) -> di
             return {'ok': True}
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Station already exists.')
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to add stations')
+
+
+@router.delete('/remove/{station_id}')
+async def remove_station_by_id(station_id: str, user = Depends(get_current_user)):
+    if user.role == 'admin':
+        if select(Station, filter_by={Station.id: station_id}):
+            delete(Station, where={'id': station_id})
+            return {'ok': True}
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Station does not exist.')
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to remove stations')

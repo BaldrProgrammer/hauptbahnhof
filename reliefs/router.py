@@ -36,7 +36,7 @@ async def add_relief(new_relief: SReliefAdd, user: SUserGet = Depends(get_curren
 
 
 @router.delete('/remove/{relief_id}')
-async def add_relief(relief_id: int, user: SUserGet = Depends(get_current_user)) -> dict:
+async def remove_relief_by_id(relief_id: int, user: SUserGet = Depends(get_current_user)) -> dict:
     if user.role == 'admin':
         if select(Relief, filter_by={Relief.id: relief_id}):
             delete(Relief, where={'id': relief_id})
