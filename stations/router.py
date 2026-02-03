@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from bezdarsql import select, insert
+from users.auth import get_current_user
 from stations.models import Station
 from stations.schemas import SStation
 
@@ -20,7 +21,11 @@ async def get_station_by_id(station_id: str):
 
 
 @router.post('/add')
-async def add_station(station: SStation) -> dict:
-    new_station = Station(**station.model_dump())
-    insert(new_station)
-    return {'ok': True}
+async def add_station(station: SStation, user = Depends(get_current_user)) -> dict:
+    if user.role == 'admin':
+        if not select(Station, filter_by={Station.id: station.id}):
+            new_station = Station(**station.model_dump())
+            insert(new_station)
+            return {'ok': True}
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Station already exists.')
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to add stations')
