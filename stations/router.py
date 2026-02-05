@@ -51,7 +51,7 @@ async def update_station(station_id: str, row: str, value: str, user=Depends(get
             return {'ok': True}
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Station not found.')
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                        detail='You are not admin and not followed to add stations')
+                        detail='You are not admin and not followed to change stations')
 
 
 @router.delete('/remove/{station_id}')

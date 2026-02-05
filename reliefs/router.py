@@ -5,7 +5,7 @@ from reliefs.schemas import SReliefGet, SReliefAdd
 from users.schemas import SUserGet
 from users.auth import get_current_user
 
-from bezdarsql import select, insert, delete
+from bezdarsql import select, insert, update, delete
 
 router = APIRouter(prefix='/reliefs', tags=['/reliefs'])
 
@@ -34,6 +34,17 @@ async def add_relief(new_relief: SReliefAdd, user: SUserGet = Depends(get_curren
         return {'ok': True, 'new_instance': select(Relief, filter_by={Relief.title: new_relief.title})}
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                         detail='You are not admin and not followed to create reliefs.')
+
+
+@router.patch('/update')
+async def update_station(relief_id: str, row: str, value: str, user=Depends(get_current_user)):
+    if user.role == 'admin':
+        if select(Relief, filter_by={Relief.id: relief_id}):
+            update(Relief, values={getattr(Relief, row): value}, where={Relief.id: relief_id})
+            return {'ok': True}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Relief not found.')
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                        detail='You are not admin and not followed to change reliefs')
 
 
 @router.delete('/remove/{relief_id}')
