@@ -44,9 +44,14 @@ async def add_station(station: SStation, user=Depends(get_current_user)) -> dict
 
 
 @router.patch('/update')
-async def update_station(station_id: str, row: str, value: str):
-    update(Station, values={getattr(Station, row): value}, where={Station.id: station_id})
-    return {'ok': True}
+async def update_station(station_id: str, row: str, value: str, user=Depends(get_current_user)):
+    if user.role == 'admin':
+        if select(Station, filter_by={Station.id: station_id}):
+            update(Station, values={getattr(Station, row): value}, where={Station.id: station_id})
+            return {'ok': True}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Station not found.')
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                        detail='You are not admin and not followed to add stations')
 
 
 @router.delete('/remove/{station_id}')
