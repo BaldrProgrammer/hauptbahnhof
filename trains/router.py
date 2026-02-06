@@ -10,7 +10,7 @@ router = APIRouter(prefix='/trains', tags=['/trains'])
 
 @router.get('/')
 async def get_all_trains() -> list[STrain]:
-    return select(Train, value='*')
+    return select(Train, value='*', count=-1)
 
 
 @router.get('/{train_id}')
