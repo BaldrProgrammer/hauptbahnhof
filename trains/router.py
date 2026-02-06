@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from bezdarsql import select, insert
+from bezdarsql import select, insert, update
 from trains.models import Train
 from trains.schemas import STrain
 from users.schemas import SUserGet
@@ -28,5 +28,16 @@ async def add_train(train: STrain, user: SUserGet = Depends(get_current_user)):
             new_instance = Train(**train.model_dump())
             insert(new_instance)
             return {'ok': True}
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to change stations')
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not admin and not followed to add trains')
     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='train already exists.')
+
+
+@router.patch('/update')
+async def update_train(train_id: str, row: str, value: str, user=Depends(get_current_user)):
+    if user.role == 'admin':
+        if select(Train, filter_by={Train.id: train_id}):
+            update(Train, values={getattr(Train, row): value}, where={Train.id: train_id})
+            return {'ok': True}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Train not found.')
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                        detail='You are not admin and not followed to change trains')
