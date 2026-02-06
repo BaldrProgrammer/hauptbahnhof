@@ -94,6 +94,3 @@ def get_map(country):
     ).add_to(m)
 
     m.save('map.html')
-
-
-get_map('Austria')
