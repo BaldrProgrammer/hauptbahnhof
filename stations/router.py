@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from bezdarsql import select, insert, update, delete
 from users.auth import get_current_user
+from users.schemas import SUserGet
 from stations.models import Station
 from stations.schemas import SStation
 from probnik import get_distance_km
@@ -32,7 +33,7 @@ async def get_station_by_id(station_id: str):
 
 
 @router.post('/add')
-async def add_station(station: SStation, user=Depends(get_current_user)) -> dict:
+async def add_station(station: SStation, user: SUserGet = Depends(get_current_user)) -> dict:
     if user.role == 'admin':
         if not select(Station, filter_by={Station.id: station.id}):
             new_station = Station(**station.model_dump())

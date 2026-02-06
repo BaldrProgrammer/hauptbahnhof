@@ -37,7 +37,7 @@ async def add_relief(new_relief: SReliefAdd, user: SUserGet = Depends(get_curren
 
 
 @router.patch('/update')
-async def update_station(relief_id: str, row: str, value: str, user=Depends(get_current_user)):
+async def update_station(relief_id: str, row: str, value: str, user: SUserGet = Depends(get_current_user)):
     if user.role == 'admin':
         if select(Relief, filter_by={Relief.id: relief_id}):
             update(Relief, values={getattr(Relief, row): value}, where={Relief.id: relief_id})

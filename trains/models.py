@@ -10,3 +10,4 @@ class Train(Base):
     id: str = Column()
     name: str = Column()
     schedule: str = Column()
+    model: str = Column()
