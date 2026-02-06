@@ -9,5 +9,6 @@ class Train(Base):
 
     id: str = Column()
     name: str = Column()
-    schedule: str = Column()
+    schedule: list[list[str]] = Column()
     model: str = Column()
+    delay: int = Column()
