@@ -26,7 +26,7 @@ async def get_distance_between(stations: str):
 
 
 @router.get('/get_route')
-async def get_route(start_station: int, end_station: int) -> list:
+async def get_route(start_station: int, end_station: int):
     all_trains = select(Train, value='*')
     start_station = select(Station, filter_by={Station.id: str(start_station)})[0]
     end_station = select(Station, filter_by={Station.id: str(end_station)})[0]
@@ -38,10 +38,12 @@ async def get_route(start_station: int, end_station: int) -> list:
             if station[0] == start_station.title or start:
                 if not start:
                     start = station.copy()
+                result.append(station)
                 if station[0] == end_station.title:
                     end = station.copy()
-                    result.append((train.id, train.model, start, end))
-    return result
+                    result.append((train.id, train.model))
+                    return result
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Connections not found.')
 
 
 @router.get('/{station_id}')
