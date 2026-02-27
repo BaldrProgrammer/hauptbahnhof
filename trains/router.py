@@ -14,7 +14,7 @@ async def get_all_trains() -> list[STrain]:
 
 
 @router.get('/{train_id}')
-async def get_relief_by_id(train_id: str) -> STrain:
+async def get_train_by_id(train_id: str) -> STrain:
     train = select(Train, filter_by={Train.id: train_id})[0]
     if train:
         return train
