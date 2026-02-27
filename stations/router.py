@@ -26,10 +26,11 @@ async def get_distance_between(stations: str):
 
 
 @router.get('/get_route')
-async def get_route(start_station: int, end_station: int):
+async def get_route(start_station: int, end_station: int) -> list:
     all_trains = select(Train, value='*')
     start_station = select(Station, filter_by={Station.id: str(start_station)})[0]
     end_station = select(Station, filter_by={Station.id: str(end_station)})[0]
+    result = []
     for train in all_trains:
         start = None
         end = None
@@ -39,7 +40,8 @@ async def get_route(start_station: int, end_station: int):
                     start = station.copy()
                 if station[0] == end_station.title:
                     end = station.copy()
-                    return train.id, train.model, start, end
+                    result.append((train.id, train.model, start, end))
+    return result
 
 
 @router.get('/{station_id}')
