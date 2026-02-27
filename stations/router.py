@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from bezdarsql import select, insert, update, delete
 from users.auth import get_current_user
 from users.schemas import SUserGet
+from trains.models import Train
 from stations.models import Station
 from stations.schemas import SStation
 from probnik import get_distance_km
@@ -22,6 +23,23 @@ async def get_distance_between(stations: str):
 
     distance = get_distance_km(float(lat1), float(lon1), float(lat2), float(lon2))
     return {'raw': distance, 'countable': round(distance)}
+
+
+@router.get('/get_route')
+async def get_route(start_station: int, end_station: int):
+    all_trains = select(Train, value='*')
+    start_station = select(Station, filter_by={Station.id: str(start_station)})[0]
+    end_station = select(Station, filter_by={Station.id: str(end_station)})[0]
+    for train in all_trains:
+        start = None
+        end = None
+        for station in train.schedule:
+            if station[0] == start_station.title or start:
+                if not start:
+                    start = station.copy()
+                if station[0] == end_station.title:
+                    end = station.copy()
+                    return train.id, train.model, start, end
 
 
 @router.get('/{station_id}')
