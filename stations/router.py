@@ -27,10 +27,11 @@ async def get_distance_between(stations: str):
 
 @router.get('/get_route')
 async def get_route(start_station: int, end_station: int):
-    all_trains = select(Train, value='*')
+    all_trains = select(Train, value='*', count=-1)
     start_station = select(Station, filter_by={Station.id: str(start_station)})[0]
     end_station = select(Station, filter_by={Station.id: str(end_station)})[0]
     result = []
+    distance = 0
     for train in all_trains:
         start = None
         end = None
@@ -38,11 +39,17 @@ async def get_route(start_station: int, end_station: int):
             if station[0] == start_station.title or start:
                 if not start:
                     start = station.copy()
+                if result:
+                    lat1, lon1 = select(Station, filter_by={Station.title: result[-1][0]})[0].coordinates.split(', ')
+                    lat2, lon2 = select(Station, filter_by={Station.title: station[0]})[0].coordinates.split(', ')
+                    distance += get_distance_km(float(lat1), float(lon1), float(lat2), float(lon2))
                 result.append(station)
                 if station[0] == end_station.title:
                     end = station.copy()
-                    result.append((train.id, train.model))
+                    result.append((train.id, train.model, distance))
                     return result
+        result.clear()
+        distance = 0
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Connections not found.')
 
 
