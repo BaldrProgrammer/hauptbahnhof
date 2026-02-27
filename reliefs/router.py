@@ -10,14 +10,6 @@ from bezdarsql import select, insert, update, delete
 router = APIRouter(prefix='/reliefs', tags=['/reliefs'])
 
 
-@router.get('/current')
-async def current_relief(user: SUserGet = Depends(get_current_user)) -> SReliefGet | None:
-    if user:
-        relief = select(Relief, filter_by={Relief.id: user.ulga})[0]
-        return relief
-    return None
-
-
 @router.get('/{relief_id}')
 async def get_relief_by_id(relief_id: int):
     relief = select(Relief, filter_by={Relief.id: relief_id})
