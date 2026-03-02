@@ -61,33 +61,39 @@ async def get_station_by_id(station_id: str):
 
 @router.post('/add')
 async def add_station(station: SStation, user: SUserGet = Depends(get_current_user)) -> dict:
-    if user.role == 'admin':
-        if not select(Station, filter_by={Station.id: station.id}):
-            new_station = Station(**station.model_dump())
-            insert(new_station)
-            return {'ok': True}
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Station already exists.')
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                        detail='You are not admin and not followed to add stations')
+    if user:
+        if user.role == 'admin':
+            if not select(Station, filter_by={Station.id: station.id}):
+                new_station = Station(**station.model_dump())
+                insert(new_station)
+                return {'ok': True}
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Station already exists.')
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail='You are not admin and not followed to add stations')
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='User is not authorised.')
 
 
 @router.patch('/update')
 async def update_station(station_id: str, row: str, value: str, user=Depends(get_current_user)):
-    if user.role == 'admin':
-        if select(Station, filter_by={Station.id: station_id}):
-            update(Station, values={getattr(Station, row): value}, where={Station.id: station_id})
-            return {'ok': True}
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Station not found.')
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                        detail='You are not admin and not followed to change stations')
+    if user:
+        if user.role == 'admin':
+            if select(Station, filter_by={Station.id: station_id}):
+                update(Station, values={getattr(Station, row): value}, where={Station.id: station_id})
+                return {'ok': True}
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Station not found.')
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail='You are not admin and not followed to change stations')
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='User is not authorised.')
 
 
 @router.delete('/remove/{station_id}')
 async def remove_station_by_id(station_id: str, user=Depends(get_current_user)):
-    if user.role == 'admin':
-        if select(Station, filter_by={Station.id: station_id}):
-            delete(Station, where={Station.id: station_id})
-            return {'ok': True}
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Station does not exist.')
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                        detail='You are not admin and not followed to remove stations')
+    if user:
+        if user.role == 'admin':
+            if select(Station, filter_by={Station.id: station_id}):
+                delete(Station, where={Station.id: station_id})
+                return {'ok': True}
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Station does not exist.')
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail='You are not admin and not followed to remove stations')
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='User is not authorised.')
